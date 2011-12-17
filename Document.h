@@ -7,38 +7,44 @@ class Document
     public:
 
         /**
-         * \brief Add a new document in the class
-         * \param string the title of the document
-         * \param string the autor of the document
+        * \brief Add a new document in the class
+        * \param title the title of the document
+        * \param autor the autor of the document
         */
-        Document(std::string, std::string);
+        Document(std::string title, std::string autor);
 
         /**
-         * \brief Destructor
+        * \brief Add a new document in the class
+        *   is the default constructor
+        */
+        Document();
+
+        /**
+        * \brief Destructor
         */
         virtual ~Document();
 
         /**
-         * \brief Set the title of the document
-         * \param string the new title
+        * \brief Set the title of the document
+        * \param title the new title
         */
-        void setTitle(const std::string&);
+        void setTitle(const std::string& title);
 
         /**
-         * \brief Set the autor of the document
-         * \param string the new autor
+        * \brief Set the autor of the document
+        * \param autor the new autor
         */
-        void setAutor(const std::string&);
+        void setAutor(const std::string& autor);
 
         /**
-         * \brief Return the title
-         * \return string the title of the document
+        * \brief Return the title
+        * \return the title of the document
         */
         std::string getTitle() const;
 
         /**
-         * \brief Return the autor
-         * \return string the autor of the document
+        * \brief Return the autor
+        * \return the autor of the document
         */
         std::string getAutor() const;
 

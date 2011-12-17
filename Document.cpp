@@ -6,14 +6,26 @@ Document::Document(std::string title, std::string autor)
     _autor = autor;
 }
 
+Document::Document() :
+        _title("Inconnu"),
+        _autor("Inconnu")
+{
+}
+
+
 Document::~Document()
 {
 
 }
 
-void Document::setTitre(const std::string& t)
+void Document::setTitle(const std::string& title)
 {
-    _title = t;
+    _title = title;
+}
+
+void Document::setAutor(const std::string& autor)
+{
+    _autor = autor;
 }
 
  std::string Document::getTitle() const
@@ -24,5 +36,5 @@ void Document::setTitre(const std::string& t)
 
 std::string Document::getAutor() const
 {
-    retrun _autor;
+    return _autor;
 }

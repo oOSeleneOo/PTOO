@@ -1,49 +1,49 @@
 #ifndef CD_H
 #define CD_H
-
+#include "Document.h"
 
 class CD : public Document
 {
     public:
 
         /**
-         * \brief Add a new CD in the class
+        * \brief Add a new CD in the class
         */
         CD();
 
         /**
-         * \brief Add a new book in the class
-         * \param string style of the CD
-         * \param int the number of piste
+        * \brief Add a new book in the class
+        * \param style style of the CD
+        * \param pisteNumber the number of piste
         */
-        CD(std::string, int);
+        CD(std::string title, std::string autor, std::string style, int pisteNumber);
 
         /**
-         * \brief Set the style
-         * \param string the new style
+        * \brief Set the style
+        * \param style the new style
         */
-        void setStyle(std::string);
+        void setStyle(std::string& style);
 
         /**
-         * \brief Set the pisteNumber
-         * \param int the new number of piste
+        * \brief Set the pisteNumber
+        * \param pisteNumber the new number of piste
         */
-        void setPisteNumber(std::string);
+        void setPisteNumber(int& pisteNumber);
 
         /**
-         * \brief Return the style
-         * \return string the style of the CD
+        * \brief Return the style
+        * \return the style of the CD
         */
         std::string getStyle() const;
 
         /**
-         * \brief Return the number of piste
-         * \return int the number of piste
+        * \brief Return the number of piste
+        * \return the number of piste
         */
         int getPisteNumber() const;
 
         /**
-         * \brief Destructor
+        * \brief Destructor
         */
         virtual ~CD();
 

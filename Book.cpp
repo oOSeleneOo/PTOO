@@ -1,8 +1,10 @@
 #include "Book.h"
 
-Book::Book()
+Book::Book() : Document(),
+    _resume(NULL),
+    _editorYear(0),
+    _editor(NULL)
 {
-
 }
 
 Book::~Book()
@@ -10,24 +12,24 @@ Book::~Book()
 
 }
 
- Book::Book(std::string resume, int year, std::string editor)
+Book::Book(std::string title, std::string autor, std::string resume, int year, std::string editor) : Document(title, autor),
+    _resume(resume),
+    _editorYear(year),
+    _editor(editor)
  {
-    _resume = resume;
-    _editorYear = year;
-    _editor = editor;
  }
 
-void Book::setResume(std::string resume)
+void Book::setResume(std::string& resume)
 {
     _resume = resume;
 }
 
-void Book::setEditorYear(int year)
+void Book::setEditorYear(int& year)
 {
     _editorYear = year;
 }
 
-void Book::setEditor(std::string editor)
+void Book::setEditor(std::string& editor)
 {
     _editor = editor;
 }
