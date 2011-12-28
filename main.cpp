@@ -9,6 +9,164 @@
 #include <stdlib.h>
 #include <istream>
 #include <algorithm>
+#include <fstream>
+
+
+bool isInteger(std::string chaineSaisie)
+{
+        bool estUnEntier = true;
+        unsigned long carParcouru = 0;
+
+        while (estUnEntier && carParcouru<chaineSaisie.length())
+        {
+                //si le caract�re parcouru est compris entre 48 et 57 inclus (code ascii des chiffres de 0 � 9) ou qu'il est = � 45, code ascii pour le symbole "-", alors on continue
+                if ((estUnEntier = (( int(chaineSaisie[carParcouru]) > 47) &&  (int(chaineSaisie[carParcouru]) < 58))) || (int(chaineSaisie[carParcouru]) == 45))
+                {
+                        carParcouru ++;
+                }
+        }
+
+        return (estUnEntier);
+}
+
+int menu()
+{
+        int iMenu;
+        std::string rep;
+
+        system("clear");
+        std::cout<<"\t***********************************\n"<<std::endl;
+        std::cout<<"\t**         Ma Biblioth�que       **\n"<<std::endl;
+        std::cout<<"\t***********************************\n"<<std::endl;
+        std::cout<<"\t** 1) Ajouter un nouveau document **\n"<<std::endl;
+        std::cout<<"\t** 2) Retirer un document **\n"<<std::endl;
+        std::cout<<"\t** 3) Rechercher un document **\n"<<std::endl;
+        std::cout<<"\t** 4) Trier les documents **\n"<<std::endl;
+        std::cout<<"\t** 5) Export HTML **\n"<<std::endl;
+        std::cout<<"\t** 0) Quitter **\n"<<std::endl;
+        std::cout<<"\t***********************************\n"<<std::endl;
+        std::cout<<"\tVotre choix : ";
+        std::cin>>rep;
+        if(isInteger(rep))
+        {
+                iMenu = atoi(rep.c_str());
+                return (iMenu);
+        }
+        else
+        {
+                return 0;
+        }
+}
+
+int menuDoc()
+{
+    int iMenuDoc;
+    std::string rep;
+    system("clear");
+    std::cout<<"\t** 1) Ajouter un nouveau livre **\n"<<std::endl;
+    std::cout<<"\t** 2) Ajouter un nouveau CD **\n"<<std::endl;
+    std::cout<<"\t** 3) Ajouter un nouveau film **\n"<<std::endl;
+    std::cout<<"\t** 4) Annuler **\n"<<std::endl;
+    std::cout<<"\tVotre choix : ";
+    std::cin>>rep;
+    if(isInteger(rep))
+    {
+            iMenuDoc = atoi(rep.c_str());
+            return (iMenuDoc);
+    }
+    else
+    {
+            return 0;
+    }
+}
+
+std::vector<std::string> split(std::string chaineInit, std::string chaineSep)
+{
+    std::vector<std::string> chaineSplit;
+    size_t pos;
+
+    //on split tant que l'on est pas arriv� au bout de la chaine
+    do{
+        //position du s�parateur dans la chaine initiale
+        pos = chaineInit.find(chaineSep);
+        //si ce n'est pas la chaine complete
+        if (pos!=std::string::npos){
+            //on ajoute tout les caract�res du d�but jusqu'a la position du s�parateur
+            chaineSplit.push_back(chaineInit.substr(0,pos));
+            //on r�duit la chaine initiale de l'�l�ment ajout� au vecteur ainsi que de la taille du s�parateur
+            chaineInit = chaineInit.substr(pos+chaineSep.length());
+        }else{
+            //on ajoute simplement ce qu'il reste de la chaine initiale (dernier �l�ment)
+            chaineSplit.push_back(chaineInit);
+        }
+    }while(pos!=std::string::npos);
+
+    return (chaineSplit);
+}
+
+void load_file(Library *lib)
+{
+    std::ifstream monFichier;   //D�claration d'un flux permettant d'�crire un fichier.
+    std::string extension = "./sauve.txt";
+    std::vector<std::string> myLine;
+    std::string title, autor, editor, style, resume, actor;
+    int piste, editorYear;
+
+    monFichier.open(extension.c_str());
+
+    if(monFichier)    //On teste si on peu ouvrir le fichier
+    {
+        system("clear");
+        while(monFichier)    //Tant qu'on n'est pas a la fin
+        {
+            std::string ligne;
+            getline(monFichier, ligne); //On lit une ligne
+            if (ligne == "<Book>")
+            {
+                getline(monFichier, ligne); //on r�cup�re la ligne suivante
+                myLine = split(ligne, "//");
+                title = myLine[0];
+                autor = myLine[1];
+                resume = myLine[2];
+                editor = myLine[3];
+                editorYear = atoi(myLine[4].c_str());
+                Book* book = new Book(title, autor, resume, editorYear, editor);
+                lib->addDoc(book);
+                myLine.clear();
+            }
+            else if (ligne == "<CD>")
+            {
+                getline(monFichier, ligne);
+                myLine = split(ligne, "//");
+                title = myLine[0];
+                autor = myLine[1];
+                style = myLine[2];
+                piste = atoi(myLine[3].c_str());
+                CD* cd = new CD(title, autor, style, piste);
+                lib->addDoc(cd);
+                myLine.clear();
+            }
+            else if (ligne == "<Movie>")
+            {
+                getline(monFichier, ligne);
+                myLine = split(ligne, "//");
+                title = myLine[0];
+                autor = myLine[1];
+                resume = myLine[2];
+                style = myLine[3];
+                actor = myLine[4];
+                Movie* movie = new Movie(title, autor, resume, style, actor);
+                lib->addDoc(movie);
+                myLine.clear();
+            }
+        }
+    }
+    else
+    {
+        std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<extension<<std::endl;
+    }
+    monFichier.close(); //On finit par refermer le fichier
+}
 
 bool sortingName(Document* doc1, Document* doc2)
 {
@@ -29,41 +187,264 @@ bool sortingName(Document* doc1, Document* doc2)
     return false;
 }
 
+void add_book(Book* b)
+{
+    std::ofstream monFichier("./sauve.txt", std::ios::app);
+
+    if(monFichier)
+    {
+        monFichier<<"<Book>"<<std::endl;
+        monFichier<<b->getTitle();
+        monFichier<<"//";
+        monFichier<<b->getAutor();
+        monFichier<<"//";
+        monFichier<<b->getResume();
+        monFichier<<"//";
+        monFichier<<b->getEditor();
+        monFichier<<"//";
+        monFichier<<b->getEditoYear();
+        monFichier<<"//"<<std::endl;
+    }
+    else
+    {
+        std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<std::endl;
+    }
+    monFichier.close();
+}
+
+void add_CD(CD* c)
+{
+    std::ofstream monFichier("./sauve.txt", std::ios::app);
+
+    if(monFichier)
+    {
+        monFichier<<"<CD>"<<std::endl;
+        monFichier<<c->getTitle();
+        monFichier<<"//";
+        monFichier<<c->getAutor();
+        monFichier<<"//";
+        monFichier<<c->getStyle();
+        monFichier<<"//";
+        monFichier<<c->getPisteNumber();
+        monFichier<<"//"<<std::endl;
+    }
+    else
+    {
+        std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<std::endl;
+    }
+    monFichier.close();
+}
+
+void add_movie(Movie* m)
+{
+    std::ofstream monFichier("./sauve.txt", std::ios::app);
+
+    if(monFichier)
+    {
+        monFichier<<"<Movie>"<<std::endl;
+        monFichier<<m->getTitle();
+        monFichier<<"//";
+        monFichier<<m->getAutor();
+        monFichier<<"//";
+        monFichier<<m->getResume();
+        monFichier<<"//";
+        monFichier<<m->getStyle();
+        monFichier<<"//";
+        monFichier<<m->getActor();
+        monFichier<<"//"<<std::endl;
+    }
+    else
+    {
+        std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<std::endl;
+    }
+    monFichier.close();
+}
+
 int main()
 {
     std::cout<<"Creating the Library"<<std::endl;
-    Library myLibrary;
+    Library* myLibrary = new Library();
 
-    std::cout<<"Adding Books, CDs ans Movies"<<std::endl;
-    Book l1("La Première Leçon du Sorcier", "Terry Goodkind","Jusqu'à ce que Richard Cypher sauve cette belle inconnue des griffes de ses poursuivants, il vivait paisiblement dans la forêt. Elle ne consent à lui dire que son nom : Kahlan. Mais lui sait déjà, au premier regard, qu'il ne pourra plus la quitter. Car désormais, le danger rôde en Hartland. Des créatures monstrueuses suivent les pas de l'étrangère. Seul Zedd, son ami le vieil ermite, peut lui venir en aide... en bouleversant son destin. Richard devra porter l'Épée de Vérité et s'opposer aux forces de Darken Rahl, le mage dictateur. Ainsi commence une extraordinaire quête à travers les ténèbres. Au nom de l'amour. A n'importe quel prix.",2003,"Barcelone");
-    Book l2("Harry Potter à l'école des sorciers", "J. K. Rowling","Harry Potter, un jeune orphelin, est élevé par son oncle Vernon et sa tante Pétunia, qui lui ont toujours affirmé que ses parents étaient morts lorsqu'il avait un an dans un accident de voiture. Dans la maison du couple irascible, Harry est forcé de dormir dans un placard et est martyrisé par leur fils Dudley. Le jour de son onzième anniversaire, Harry reçoit la visite d'un demi-géant du nom de Hagrid. Ce dernier lui apprend que la magie existe et qu'un monde de sorciers vit en marge et dans l'ignorance des Moldus, les personnes dépourvues de pouvoirs magiques. Il lui révèle également que ses parents étaient en fait de puissants magiciens et qu'il a hérité de leurs pouvoirs. Ils ne sont pas décédés dans un accident, mais assassinés par Lord Voldemort, le Seigneur des Ténèbres dont personne n'ose prononcer le nom, un mage noir très puissant qui avait plongé le monde des sorciers dans le chaos. Voldemort avait tenté de tuer Harry cette nuit-là avec le sortilège de la mort, mais le sort s'était retourné contre lui et il avait disparu, faisant de Harry le seul survivant du sortilège et le sauveur du monde des sorciers, lui laissant une cicatrice en forme d'éclair sur le front. Harry apprend par la bouche d'Hagrid qu'il était, à son insu, la plus grande célébrité du monde des sorciers depuis cette nuit-là, celle de ses 1 an. ",1998, "	Gallimard Jeunesse");
-    Book l3("Madame Bovary", "Gustave Flaubert","Fille d'un riche fermier, Emma Rouault épouse Charles Bovary, officier de santé et veuf récent d'une femme tyrannique. Elevée dans un couvent, Emma aspire à vivre dans le monde de rêve dont parlent les romans à l'eau de rose qu'elle y a lu. Un bal au château de Vaubyessard la persuade qu'un tel monde existe, mais le décalage qu'elle découvre avec sa propre vie déclenche chez elle une maladie nerveuse. Son mari décide alors de s'installer dans une autre bourgade, siège de comices agricoles renommées, Yonville-l'Abbaye. Là, elle fait connaissance des personnalités locales, Homais, pharmacien progressiste et athée, le curé Bournisien, Léon Dupuis, clerc de notaire, Rodolphe Boulanger, gentilhomme campagnard. La naissance d'une fille la distrait un peu, mais bientôt Emma cède aux avances de Rodolphe. Elle veut s'enfuir avec son amant qui, lâche, l'abandonne. Emma croit en mourir, traverse d'abord une crise de mysticisme, puis plus tard, au théâtre de Rouen, revoit Léon, revenu de Paris. Elle devient très vite sa maîtresse, lors d'une promenade dans un fiacre. Installée dans sa liaison, Emma Bovary invente des mensonges pour revoir Léon, et dépense des sommes importantes, qu'elle emprunte à un marchand trop complaisant, Lheureux. Un jour, celui-ci exige d'être remboursé. Emma, par peur du jugement qui va être prononcé contre elle, tente d'emprunter auprès de Léon, puis de Rodolphe. Tous deux la repoussent, et Emma s'empoisonne avec l'arsenic dérobé chez le pharmacien. ",1857, "	Michel Lévy frères");
-    CD c1("Du monde tout autour", "Louise Attaque", "Rock français", 17);
-    CD c2("Born This Way", "Lady Gaga", "pop", 14);
-    Movie m1("Titanic", "James Cameron", "Il raconte l'histoire de deux passagers du paquebot Titanic. L'une, Rose, est une passagère de première classe qui tente de se suicider pour se libérer des contraintes imposées par son entourage, et le second, Jack, est un vagabond embarqué à la dernière minute en troisième classe pour retourner aux États-Unis. Ils se rencontrent par hasard lors de la tentative de suicide de Rose et vivent une histoire d'amour vite troublée par le naufrage du paquebot.", "Drame","Leonardo DiCaprio, Kate Winslet");
-    Movie m2("Le Seigneur des anneaux : la communauté de l'anneau", "Peter Jackson ", "Dans ce chapitre de la trilogie, le jeune et timide Hobbit, Frodon Sacquet, hérite d'un anneau. Bien loin d'être une simple babiole, il s'agit de l'Anneau Unique, un instrument de pouvoir absolu qui permettrait à Sauron, le Seigneur des ténèbres, de régner sur la Terre du Milieu et de réduire en esclavage ses peuples. À moins que Frodon, aidé d'une Compagnie constituée de Hobbits, d'Hommes, d'un Magicien, d'un Nain, et d'un Elfe, ne parvienne à emporter l'Anneau à travers la Terre du Milieu jusqu'à la Crevasse du Destin, lieu où il a été forgé, et à le détruire pour toujours. Un tel périple signifie s'aventurer très loin en Mordor, les terres du Seigneur des ténèbres, où est rassemblée son armée d'Orques maléfiques... La Compagnie doit non seulement combattre les forces extérieures du mal mais aussi les dissensions internes et l'influence corruptrice qu'exerce l'Anneau lui-même. L'issue de l'histoire à venir est intimement liée au sort de la Compagnie. ", "Fantastique", "Elijah Wood, Sean Astin, Ian McKellen");
+    std::cout<<"Adding Books, CDs and Movies"<<std::endl;
+    load_file(myLibrary);
 
-    myLibrary.addDoc(&l1);
-    myLibrary.addDoc(&l2);
-    myLibrary.addDoc(&l3);
-    myLibrary.addDoc(&c1);
-    myLibrary.addDoc(&c2);
-    myLibrary.addDoc(&m1);
-    myLibrary.addDoc(&m2);
-
-    std::cout << "\n*** Sorting by name ... " << std::endl;
-    myLibrary.sort(&sortingName);
-    std::vector<Document*> doc = myLibrary.search("");
-    for(unsigned int i =0;i<doc.size();i++)
+    int iMenu = 20;
+    while (iMenu !=0)
     {
-        std::cout<<" > "<<doc[i]->getTitle()<<std::endl;
-    }
+        iMenu = menu();
+        switch(iMenu)
+        {
+            case 1 :
+                {
+                    //*****Ajouter un document*****
+                    int iMenuDoc = menuDoc();
+                    switch(iMenuDoc)
+                    {
+                        case 1:
+                            {
+                                //*****Ajouter un livre*****
+                                std::string title, autor, resume, editor, buffer;
+                                int editorYear;
 
-    std::cout<<"Number of documents : "<<myLibrary.numberDocument()<<std::endl;
-    std::cout<<"Export to html"<<std::endl;
-    myLibrary.exportHTML();
+                                std::cout<<"Saisir le titre du livre"<<std::endl;
+                                std::getline(std::cin,buffer);
+                                std::getline(std::cin,title);
+                                std::cout<<"Saisir l'auteur du livre"<<std::endl;
+                                std::getline(std::cin,autor);
+                                std::cout<<"Saisir le r�sum� du livre"<<std::endl;
+                                std::getline(std::cin,resume);
+                                std::cout<<"Saisir l'ann�e d'�dition du livre"<<std::endl;
+                                std::cin>>editorYear;
+                                std::cout<<"Saisir l'�diteur du livre"<<std::endl;
+                                std::getline(std::cin,buffer);
+                                std::getline(std::cin,editor);
+
+                                Book* b = new Book();
+                                b->setTitle(title);
+                                b->setAutor(autor);
+                                b->setResume(resume);
+                                b->setEditor(editor);
+                                b->setEditorYear(editorYear);
+                                add_book(b);
+                                myLibrary->addDoc(b);
+
+                                std::cout<<"Votre livre a bien �t� enregistr�"<<std::endl;
+                                break;
+                            }
+                        case 2:
+                            {
+                                //*****Ajouter un CD*****
+                                std::string title, autor, style, buffer;
+                                int piste;
+
+                                std::cout<<"Saisir le titre du CD"<<std::endl;
+                                std::getline(std::cin,buffer);
+                                std::getline(std::cin,title);
+                                std::cout<<"Saisir l'artiste du CD"<<std::endl;
+                                std::getline(std::cin,autor);
+                                std::cout<<"Saisir le style du CD"<<std::endl;
+                                std::getline(std::cin,style);
+                                std::cout<<"Saisir le nombre de piste de CD"<<std::endl;
+                                std::cin>>piste;
+
+                                CD* c = new CD();
+                                c->setTitle(title);
+                                c->setAutor(autor);
+                                c->setStyle(style);
+                                c->setPisteNumber(piste);
+                                add_CD(c);
+                                myLibrary->addDoc(c);
+
+                                std::cout<<"Votre CD a bien �t� enregistr�"<<std::endl;
+
+                                break;
+                            }
+                        case 3:
+                            {
+                                //*****Ajouter un film*****
+                                std::string title, autor, resume, style, actor, buffer;
+
+                                std::cout<<"Saisir le titre du film"<<std::endl;
+                                std::getline(std::cin,buffer);
+                                std::getline(std::cin,title);
+                                std::cout<<"Saisir le r�alisateur du film"<<std::endl;
+                                std::getline(std::cin,autor);
+                                std::cout<<"Saisir le style du film"<<std::endl;
+                                std::getline(std::cin,style);
+                                std::cout<<"Saisir le r�sum� du film"<<std::endl;
+                                std::getline(std::cin,resume);
+                                std::cout<<"Saisir un ou plusieurs acteurs du film"<<std::endl;
+                                std::getline(std::cin,actor);
+
+                                Movie* m = new Movie();
+                                m->setTitle(title);
+                                m->setAutor(autor);
+                                m->setStyle(style);
+                                m->setResume(resume);
+                                m->setActor(actor);
+                                add_movie(m);
+                                myLibrary->addDoc(m);
+
+                                std::cout<<"Votre film a bien �t� enregistr�"<<std::endl;
+
+                                break;
+                            }
+                        default :
+                        {
+                            //*****On annule*****
+                            std::cout<<"Ajout annul�"<<std::endl;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            case 2 :
+                {
+                    //*****Retirer un document*****
+                    std::cout<<"title"<<std::endl;
+                    std::string title, buffer;
+                    std::getline(std::cin,buffer);
+                    std::getline(std::cin,title);
+                    Document d;
+                    d = myLibrary->searchDoc(title);
+                    if(d.getTitle()=="Inconnu")
+                    {
+                        std::cout<<"Document inconnu, suppression annul�e"<<std::endl;
+                    }
+                    else
+                    {
+                        myLibrary->deleteDoc(&d);
+                        std::cout<<"Document supprim�"<<std::endl;
+                    }
+                    break;
+                }
+            case 3 :
+                {
+                    //*****Rechercher un document*****
+                    std::cout<<"Donnez le titre du document"<<std::endl;
+                    std::string title, buffer;
+                    std::getline(std::cin,buffer);
+                    std::getline(std::cin,title);
+                    Document d;
+                    d = myLibrary->searchDoc(title);
+                    if(d.getTitle()=="Inconnu")
+                    {
+                        std::cout<<"Document inconnu"<<std::endl;
+                    }
+                    else
+                    {
+                        std::cout<<"Document trouv�"<<std::endl;
+                        std::cout<<"Title : "<<d.getAutor()<<std::endl;
+                        std::cout<<"Autor : "<<d.getTitle()<<std::endl;
+                    }
+                    break;
+                }
+            case 4 :
+                {
+                    //*****Trier les documents*****
+                    break;
+                }
+            case 5 :
+                {
+                    //*****Export HTML*****
+                    myLibrary->exportHTML();
+                    std::cout<<"Export effectu� : ouvrez le fichier index.html"<<std::endl;
+                    break;
+                }
+            case 0 :
+                {
+                    //*****Quitter*****
+                    break;
+                }
+            default :
+            {
+                std::cout<<"Nous n'avons pas compris votre demande"<<std::endl;
+                std::cout<<"Veuillez saisir un chiffre entre 1 et 5"<<std::endl;
+                //sleep(3);
+                break;
+            }
+        }
+    }
 
     return 0;
 }
-
-

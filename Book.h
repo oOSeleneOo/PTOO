@@ -24,19 +24,19 @@ class Book : public Document
         * \brief Set the resume
         * \param resume the new resume
         */
-        void setResume(std::string& resume);
+        void setResume(const std::string& resume);
 
         /**
         * \brief Set the editor year
         * \param year the new editor year
         */
-        void setEditorYear(int& year);
+        void setEditorYear(const int year);
 
         /**
         * \brief Set the editor
         * \param editor the new editor
         */
-        void setEditor(std::string& editor);
+        void setEditor(const std::string& editor);
 
         /**
         * \brief Return the resume

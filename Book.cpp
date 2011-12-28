@@ -1,9 +1,9 @@
 #include "Book.h"
 
 Book::Book() : Document(),
-    _resume(NULL),
+    _resume(""),
     _editorYear(0),
-    _editor(NULL)
+    _editor("")
 {
 }
 
@@ -19,17 +19,17 @@ Book::Book(std::string title, std::string autor, std::string resume, int year, s
  {
  }
 
-void Book::setResume(std::string& resume)
+void Book::setResume(const std::string& resume)
 {
     _resume = resume;
 }
 
-void Book::setEditorYear(int& year)
+void Book::setEditorYear(const int year)
 {
     _editorYear = year;
 }
 
-void Book::setEditor(std::string& editor)
+void Book::setEditor(const std::string& editor)
 {
     _editor = editor;
 }

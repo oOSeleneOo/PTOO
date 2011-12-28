@@ -63,6 +63,9 @@ class Library
         */
         std::vector<Document*>& search(std::string name);
 
+
+        void showDoc();
+
     protected:
         std::vector<Document*> _biblio;
 };

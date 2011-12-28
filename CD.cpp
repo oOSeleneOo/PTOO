@@ -17,12 +17,12 @@ CD::CD(std::string title, std::string autor, std::string style, int pisteNumber)
     _pisteNumber = pisteNumber;
 }
 
-void CD::setStyle(std::string& style)
+void CD::setStyle(const std::string& style)
 {
     _style = style;
 }
 
-void CD::setPisteNumber(int& pisteNumber)
+void CD::setPisteNumber(int pisteNumber)
 {
     _pisteNumber = pisteNumber;
 }

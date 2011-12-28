@@ -56,7 +56,7 @@ void Library::exportHTML()
 Document& Library::searchDoc(std::string title)
 {
     bool ok = false;
-    Document doc;
+    Document doc("Inconnu", "Inconnu");
     for(unsigned int i =0;i<_biblio.size();i++)
     {
         if(_biblio[i]->getTitle() == title)
@@ -85,4 +85,13 @@ void Library::sort(bool (*f)(Document*, Document*))
 std::vector<Document*>& Library::search(std::string)
 {
      return _biblio;
+}
+
+void Library::showDoc()
+{
+    std::cout<<"\n*** Liste of Documents ***"<<std::endl;
+    for(unsigned int i=0;i<_biblio.size();i++)
+    {
+        std::cout<<"* "<<_biblio[i]->getTitle()<<std::endl;
+    }
 }

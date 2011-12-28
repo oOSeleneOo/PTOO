@@ -21,17 +21,17 @@ Movie::~Movie()
 
 }
 
-void Movie::setResume(std::string& resume)
+void Movie::setResume(const std::string& resume)
 {
     _resume = resume;
 }
 
-void Movie::setStyle(std::string& style)
+void Movie::setStyle(const std::string& style)
 {
     _style = style;
 }
 
-void Movie::setActor(std::string& actor)
+void Movie::setActor(const std::string& actor)
 {
     _actor = actor;
 }

@@ -22,13 +22,13 @@ class CD : public Document
         * \brief Set the style
         * \param style the new style
         */
-        void setStyle(std::string& style);
+        void setStyle(const std::string& style);
 
         /**
         * \brief Set the pisteNumber
         * \param pisteNumber the new number of piste
         */
-        void setPisteNumber(int& pisteNumber);
+        void setPisteNumber(int pisteNumber);
 
         /**
         * \brief Return the style

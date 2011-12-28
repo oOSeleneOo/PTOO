@@ -9,9 +9,9 @@ public:
     Movie();
     Movie(std::string title, std::string autor, std::string resume, std::string style, std::string actor);
     virtual ~Movie();
-    void setResume(std::string& resume);
-    void setStyle(std::string& style);
-    void setActor(std::string& actor);
+    void setResume(const std::string& resume);
+    void setStyle(const std::string& style);
+    void setActor(const std::string& actor);
     std::string getResume() const;
     std::string getStyle() const;
     std::string getActor() const;
