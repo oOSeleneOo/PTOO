@@ -39,7 +39,7 @@ std::string Book::getResume() const
     return _resume;
 }
 
-int Book::getEditoYear() const
+int Book::getEditorYear() const
 {
     return _editorYear;
 }

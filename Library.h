@@ -57,11 +57,10 @@ class Library
         void sort(bool (*f)(Document*, Document*));
 
         /**
-        \brief Return a vector including all the document matching the name
-        \param name The name of the Document
+        \brief Return all the document of the library
         \return A vector of Document pointer
         */
-        std::vector<Document*>& search(std::string name);
+        std::vector<Document*>& getDoc();
 
 
         void showDoc();

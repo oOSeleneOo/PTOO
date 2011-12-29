@@ -48,7 +48,7 @@ class Book : public Document
         * \brief Return the editor year
         * \return the editor year
         */
-        int getEditoYear() const;
+        int getEditorYear() const;
 
         /**
         * \brief Return the editor

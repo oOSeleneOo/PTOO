@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <fstream>
 
-
 bool isInteger(std::string chaineSaisie)
 {
         bool estUnEntier = true;
@@ -43,6 +42,7 @@ int menu()
         std::cout<<"\t** 3) Rechercher un document **\n"<<std::endl;
         std::cout<<"\t** 4) Trier les documents **\n"<<std::endl;
         std::cout<<"\t** 5) Export HTML **\n"<<std::endl;
+        std::cout<<"\t** 6) Voir la bibliotheque **\n"<<std::endl;
         std::cout<<"\t** 0) Quitter **\n"<<std::endl;
         std::cout<<"\t***********************************\n"<<std::endl;
         std::cout<<"\tVotre choix : ";
@@ -73,6 +73,30 @@ int menuDoc()
     {
             iMenuDoc = atoi(rep.c_str());
             return (iMenuDoc);
+    }
+    else
+    {
+            return 0;
+    }
+}
+
+int menuSort()
+{
+    int iMenuSort;
+    std::string rep;
+    system("clear");
+    std::cout<<"\t** 1) Trier uniquement les Livres **\n"<<std::endl;
+    std::cout<<"\t** 2) Trier uniquement les CD **\n"<<std::endl;
+    std::cout<<"\t** 3) Trier uniquement les Films **\n"<<std::endl;
+    std::cout<<"\t** 4) Trier par nom **\n"<<std::endl;
+    std::cout<<"\t** 5) Trier par auteur **\n"<<std::endl;
+    std::cout<<"\t** 0) Annuler **\n"<<std::endl;
+    std::cout<<"\tVotre choix : ";
+    std::cin>>rep;
+    if(isInteger(rep))
+    {
+            iMenuSort = atoi(rep.c_str());
+            return (iMenuSort);
     }
     else
     {
@@ -116,7 +140,6 @@ void load_file(Library *lib)
 
     if(monFichier)    //On teste si on peu ouvrir le fichier
     {
-        system("clear");
         while(monFichier)    //Tant qu'on n'est pas a la fin
         {
             std::string ligne;
@@ -187,6 +210,64 @@ bool sortingName(Document* doc1, Document* doc2)
     return false;
 }
 
+bool sortingAutor(Document* doc1, Document* doc2)
+{
+
+    std::string s1 = doc1->getAutor();
+    std::string s2 = doc2->getAutor();
+
+    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
+    std::transform(s2.begin(), s2.end(), s2.begin(), ::tolower);
+
+    for(unsigned int i = 0; i < s2.size(); ++i) {
+         int c1 = s1[i];
+         int c2 = s2[i];
+         if(c1 != c2) {
+              return (c1 < c2);
+         }
+    }
+    return false;
+}
+
+bool sortingBook(Document* doc1, Document* doc2)
+{
+    Book* b1 = dynamic_cast<Book*>(doc1);
+    Book* b2 = dynamic_cast<Book*>(doc2);
+
+    if(b1 && b2)
+    {
+        return (b1->getEditorYear() < b2->getEditorYear());
+    }
+
+    return true;
+}
+
+bool sortingCD(Document* doc1, Document* doc2)
+{
+    CD* c1 = dynamic_cast<CD*>(doc1);
+    CD* c2 = dynamic_cast<CD*>(doc2);
+
+    if(c1 && c2)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool sortingMovie(Document* doc1, Document* doc2)
+{
+    Movie* m1 = dynamic_cast<Movie*>(doc1);
+    Movie* m2 = dynamic_cast<Movie*>(doc2);
+
+    if(m1 && m2)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void add_book(Book* b)
 {
     std::ofstream monFichier("./sauve.txt", std::ios::app);
@@ -202,7 +283,7 @@ void add_book(Book* b)
         monFichier<<"//";
         monFichier<<b->getEditor();
         monFichier<<"//";
-        monFichier<<b->getEditoYear();
+        monFichier<<b->getEditorYear();
         monFichier<<"//"<<std::endl;
     }
     else
@@ -258,6 +339,55 @@ void add_movie(Movie* m)
         std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<std::endl;
     }
     monFichier.close();
+}
+
+void dell(std::string title)
+{
+    std::ifstream monFichier;
+    std::ofstream newFichier;
+    std::string extension = "./sauve.txt";
+    std::string newName = "./sauve2.txt";
+    std::vector<std::string> myLine;
+    std::string ligne, ligne2;
+
+    monFichier.open(extension.c_str());
+
+    if(monFichier)
+    {
+        newFichier.open(newName.c_str());
+        if(newFichier)
+        {
+            while(getline(monFichier,ligne)) //ligne du type
+            {
+                getline(monFichier, ligne2); //ligne description
+                myLine = split(ligne2, "//");
+                if (myLine[0] == title)
+                {
+                    //c'est le document a supprimer
+                }
+                else
+                {
+                    //c'est un document a garder
+                    newFichier<<ligne<<std::endl;
+                    newFichier<<ligne2<<std::endl;
+                }
+            }
+        }
+        else
+        {
+             std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<newName<<std::endl;
+        }
+        newFichier.close();
+        monFichier.close();
+        //supression de l'ancien fichier
+        remove(extension.c_str());
+        //on renomme le nouveau fichier
+        rename(newName.c_str(), extension.c_str());
+    }
+    else
+    {
+        std::cout<<"ERREUR: Impossible d'ouvrir le fichier "<<extension<<std::endl;
+    }
 }
 
 int main()
@@ -381,7 +511,7 @@ int main()
             case 2 :
                 {
                     //*****Retirer un document*****
-                    std::cout<<"title"<<std::endl;
+                    std::cout<<"Entrez le titre du document : "<<std::endl;
                     std::string title, buffer;
                     std::getline(std::cin,buffer);
                     std::getline(std::cin,title);
@@ -393,7 +523,8 @@ int main()
                     }
                     else
                     {
-                        myLibrary->deleteDoc(&d);
+                        myLibrary->deleteDoc(&d); //on le supprime de la bibliotheque
+                        dell(d.getTitle()); //on le supprime du fichier
                         std::cout<<"Document supprimé"<<std::endl;
                     }
                     break;
@@ -422,6 +553,91 @@ int main()
             case 4 :
                 {
                     //*****Trier les documents*****
+                    int iMenuSort = menuSort();
+                    switch(iMenuSort)
+                    {
+                        case 1:
+                            {
+                                //*****Trier uniquement les Livres*****
+                                 std::cout << "\n*** Sorting Book ***" << std::endl;
+                                 myLibrary->sort(&sortingBook);
+                                 std::vector<Document*> doc = myLibrary->getDoc();
+                                 for(unsigned int i =0;i<doc.size();i++)
+                                 {
+                                     Book* book = dynamic_cast<Book*>(doc[i]);
+                                     if(book)
+                                     {
+                                         std::cout<<"* "<<book->getTitle()<<" in "<<book->getEditorYear()<<std::endl;
+                                     }
+                                 }
+                                break;
+                            }
+                        case 2 :
+                            {
+                                //*****Trier uniquement les CD*****
+                                std::cout << "\n*** Sorting CD ***" << std::endl;
+                                myLibrary->sort(&sortingCD);
+                                myLibrary->sort(&sortingName);
+                                std::vector<Document*> doc = myLibrary->getDoc();
+                                for(unsigned int i =0;i<doc.size();i++)
+                                {
+                                    CD* cd = dynamic_cast<CD*>(doc[i]);
+                                    if(cd)
+                                    {
+                                        std::cout<<"* "<<cd->getTitle()<<std::endl;
+                                    }
+                                }
+                                break;
+                            }
+                        case 3 :
+                            {
+                                //*****Trier uniquement les Films*****
+                                std::cout << "\n*** Sorting Movie ***" << std::endl;
+                                myLibrary->sort(&sortingMovie);
+                                myLibrary->sort(&sortingName);
+                                std::vector<Document*> doc = myLibrary->getDoc();
+                                for(unsigned int i =0;i<doc.size();i++)
+                                {
+                                    Movie* m = dynamic_cast<Movie*>(doc[i]);
+                                    if(m)
+                                    {
+                                        std::cout<<"* "<<m->getTitle()<<std::endl;
+                                    }
+                                }
+                                break;
+                            }
+                        case 4 :
+                            {
+                                //*****Trier par nom*****
+                                std::cout << "\n*** Sorting by name ***" << std::endl;
+                                myLibrary->sort(&sortingName);
+                                std::vector<Document*> doc = myLibrary->getDoc();
+                                for(unsigned int i =0;i<doc.size();i++)
+                                {
+                                    std::cout<<"* "<<doc[i]->getTitle()<<std::endl;
+                                }
+                                break;
+                            }
+                        case 5 :
+                            {
+                                //*****Trier par auteur*****
+                                std::cout << "\n*** Sorting by autor ***" << std::endl;
+                                myLibrary->sort(&sortingAutor);
+                                std::vector<Document*> doc = myLibrary->getDoc();
+                                for(unsigned int i =0;i<doc.size();i++)
+                                {
+                                    std::cout<<"* "<<doc[i]->getTitle()<<" by "<<doc[i]->getAutor()<<std::endl;
+                                }
+                                break;
+                            }
+                        default :
+                            {
+                                //*****On annule*****
+                                std::cout<<"Tri annulé"<<std::endl;
+                                break;
+                            }
+                    }
+
                     break;
                 }
             case 5 :
@@ -429,6 +645,11 @@ int main()
                     //*****Export HTML*****
                     myLibrary->exportHTML();
                     std::cout<<"Export effectué : ouvrez le fichier index.html"<<std::endl;
+                    break;
+                }
+            case 6 :
+                {
+                    myLibrary->showDoc();
                     break;
                 }
             case 0 :
