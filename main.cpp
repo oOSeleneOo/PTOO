@@ -392,10 +392,9 @@ void dell(std::string title)
 
 int main()
 {
-    std::cout<<"Creating the Library"<<std::endl;
     Library* myLibrary = new Library();
 
-    std::cout<<"Adding Books, CDs and Movies"<<std::endl;
+    //Adding Books, CDs and Movies
     load_file(myLibrary);
 
     int iMenu = 20;

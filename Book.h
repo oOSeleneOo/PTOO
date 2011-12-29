@@ -2,6 +2,12 @@
 #define BOOK_H
 #include "Document.h"
 
+/**
+ * \file    Book.h
+ * \author  Dutin Laure & Couradet Vanessa
+ * \brief   Definition of Book class
+ */
+
 class Book : public Document
 {
 
@@ -14,6 +20,8 @@ class Book : public Document
 
         /**
         * \brief Add a new book in the class
+        * \param title the title of the book
+        * \param autor the autor of the book
         * \param resume A resume of the book
         * \param editorYear the year of parution
         * \param editor the editor of the book

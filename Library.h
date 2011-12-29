@@ -3,6 +3,12 @@
 #include "Document.h"
 #include "vector"
 
+/**
+ * \file    Library.h
+ * \author  Dutin Laure & Couradet Vanessa
+ * \brief   Definition of Library class
+ */
+
 class Library
 {
     public:
@@ -42,12 +48,6 @@ class Library
         Document& searchDoc(std::string title);
 
         /**
-        * \brief Return the number of documents
-        * \return the number of document
-        */
-        int numberDocument() const;
-
-        /**
         \brief Sort the document stored in the class
         \param f A pointer to the function that will proceed the sort algorithm
 
@@ -62,7 +62,9 @@ class Library
         */
         std::vector<Document*>& getDoc();
 
-
+        /**
+        * \brief Show all the document in the library
+        */
         void showDoc();
 
     protected:

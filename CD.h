@@ -2,6 +2,12 @@
 #define CD_H
 #include "Document.h"
 
+/**
+ * \file    CD.h
+ * \author  Dutin Laure & Couradet Vanessa
+ * \brief   Definition of CD class
+ */
+
 class CD : public Document
 {
     public:
@@ -13,6 +19,8 @@ class CD : public Document
 
         /**
         * \brief Add a new book in the class
+        * \param title the title of the CD
+        * \param autor teh autor of the CD
         * \param style style of the CD
         * \param pisteNumber the number of piste
         */

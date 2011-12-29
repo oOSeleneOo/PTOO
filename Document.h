@@ -2,6 +2,12 @@
 #define DOCUMENT_H
 #include <string>
 
+/**
+ * \file    Document.h
+ * \author  Dutin Laure & Couradet Vanessa
+ * \brief   Definition of Document class
+ */
+
 class Document
 {
     public:

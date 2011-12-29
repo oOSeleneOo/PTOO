@@ -96,11 +96,6 @@ Document& Library::searchDoc(std::string title)
     }
 }
 
-int Library::numberDocument() const
-{
-    return _biblio.size();
-}
-
 void Library::sort(bool (*f)(Document*, Document*))
 {
      std::sort(_biblio.begin(), _biblio.end(), f);
