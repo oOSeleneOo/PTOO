@@ -144,40 +144,35 @@ void load_file(Library *lib)
         {
             std::string ligne;
             getline(monFichier, ligne); //On lit une ligne
-            if (ligne == "<Book>")
+            myLine = split(ligne, "//");
+            if (myLine[0] == "<Book>")
             {
-                getline(monFichier, ligne); //on récupère la ligne suivante
-                myLine = split(ligne, "//");
-                title = myLine[0];
-                autor = myLine[1];
-                resume = myLine[2];
-                editor = myLine[3];
-                editorYear = atoi(myLine[4].c_str());
+                title = myLine[1];
+                autor = myLine[2];
+                resume = myLine[3];
+                editor = myLine[4];
+                editorYear = atoi(myLine[5].c_str());
                 Book* book = new Book(title, autor, resume, editorYear, editor);
                 lib->addDoc(book);
                 myLine.clear();
             }
-            else if (ligne == "<CD>")
+            else if (myLine[0] == "<CD>")
             {
-                getline(monFichier, ligne);
-                myLine = split(ligne, "//");
-                title = myLine[0];
-                autor = myLine[1];
-                style = myLine[2];
-                piste = atoi(myLine[3].c_str());
+                title = myLine[1];
+                autor = myLine[2];
+                style = myLine[3];
+                piste = atoi(myLine[4].c_str());
                 CD* cd = new CD(title, autor, style, piste);
                 lib->addDoc(cd);
                 myLine.clear();
             }
-            else if (ligne == "<Movie>")
+            else if (myLine[0] == "<Movie>")
             {
-                getline(monFichier, ligne);
-                myLine = split(ligne, "//");
-                title = myLine[0];
-                autor = myLine[1];
-                resume = myLine[2];
-                style = myLine[3];
-                actor = myLine[4];
+                title = myLine[1];
+                autor = myLine[2];
+                resume = myLine[3];
+                style = myLine[4];
+                actor = myLine[5];
                 Movie* movie = new Movie(title, autor, resume, style, actor);
                 lib->addDoc(movie);
                 myLine.clear();
@@ -274,7 +269,8 @@ void add_book(Book* b)
 
     if(monFichier)
     {
-        monFichier<<"<Book>"<<std::endl;
+        monFichier<<"<Book>";
+        monFichier<<"//";
         monFichier<<b->getTitle();
         monFichier<<"//";
         monFichier<<b->getAutor();
@@ -299,7 +295,8 @@ void add_CD(CD* c)
 
     if(monFichier)
     {
-        monFichier<<"<CD>"<<std::endl;
+        monFichier<<"<CD>";
+        monFichier<<"//";
         monFichier<<c->getTitle();
         monFichier<<"//";
         monFichier<<c->getAutor();
@@ -322,7 +319,8 @@ void add_movie(Movie* m)
 
     if(monFichier)
     {
-        monFichier<<"<Movie>"<<std::endl;
+        monFichier<<"<Movie>";
+        monFichier<<"//";
         monFichier<<m->getTitle();
         monFichier<<"//";
         monFichier<<m->getAutor();
@@ -348,7 +346,7 @@ void dell(std::string title)
     std::string extension = "./sauve.txt";
     std::string newName = "./sauve2.txt";
     std::vector<std::string> myLine;
-    std::string ligne, ligne2;
+    std::string ligne;
 
     monFichier.open(extension.c_str());
 
@@ -357,11 +355,10 @@ void dell(std::string title)
         newFichier.open(newName.c_str());
         if(newFichier)
         {
-            while(getline(monFichier,ligne)) //ligne du type
+            while(getline(monFichier,ligne))
             {
-                getline(monFichier, ligne2); //ligne description
-                myLine = split(ligne2, "//");
-                if (myLine[0] == title)
+                myLine = split(ligne, "//");
+                if (myLine[1] == title)
                 {
                     //c'est le document a supprimer
                 }
@@ -369,7 +366,6 @@ void dell(std::string title)
                 {
                     //c'est un document a garder
                     newFichier<<ligne<<std::endl;
-                    newFichier<<ligne2<<std::endl;
                 }
             }
         }
